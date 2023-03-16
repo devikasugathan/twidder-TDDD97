@@ -1,0 +1,272 @@
+*{
+    box-sizing: border-box;
+    margin: 1;
+    padding: 4;
+}
+#WindowDiv{
+    background-color:rgb(0, 195, 255);
+    position: absolute;
+    width: 1500px;
+    height: 1000px;
+}
+
+/* welcome */
+
+#Welcome_div{
+    width: 600px;
+    height: 400px;
+    margin: auto;
+    top: 100px;
+    position: relative;
+}
+
+img{
+    width:340px;
+    height:630px;
+    border:1px solid rgb(5, 6, 7);
+}
+
+#forms_div{
+    float:right;
+    height:100%;
+    width:250px;
+}
+
+#Login_div {
+    background-color: white;
+    text-align:left;
+    height: 147px;
+    width:150%;
+    border:1px solid rgb(5, 6, 7);
+    padding-top: 0px;
+    margin-bottom: 10px;
+}
+.input{
+    margin: 5px;
+}
+.input label{
+    text-align: left;
+    margin-right: 5px;
+    margin-top: 2px;
+    margin-bottom: 3px;
+}
+.input input{
+    float: right;
+    margin-top: 2px;
+}
+.input select{
+    float: right;
+    width: 62%;
+    margin-top: 2px;
+    margin-left: 10px;
+}
+
+
+#signup_div {
+    background-color: white;
+    padding-top: 0px;
+    text-align:left;
+    height: 480px;
+    width:150%;
+    border:1px solid rgb(5, 6, 7);
+}
+
+form{
+    padding: 5px;
+}
+input{
+    float: right;
+}
+select{
+    float: right;
+    width: 60%;
+}
+label{
+    display: inline-block;
+    height: 26px;
+}
+
+#AccountPage label{
+    margin: 10px;
+}
+
+#match_error {
+    color: rgb(241, 4, 4);
+    position: absolute;
+    top: 230px;
+    left: 10px;
+    display: none;
+}
+
+#old_error{
+    color: rgb(255, 0, 0);
+    position: absolute;
+    top: 230px;
+    display: none;
+}
+
+#AccountPage input{
+   margin-top: 10px;
+   margin-right: 67%;
+}
+
+#AccountPage label{
+    margin: 10px;
+}
+
+
+h1, h3{
+    text-align: center;
+}
+
+#LoginError{
+    bottom: 20px;
+    left:30px;
+    color: rgb(252, 6, 170);
+    position: relative;
+    font-size: 12px;
+}
+#SignUpError{
+    bottom: 20px;
+    left:29px;
+    color: rgb(252, 6, 170);
+    position: relative;
+    font-size: 12px;
+}
+
+#signup_div h3{
+    position:relative;
+    bottom:10px;
+}
+
+/* Profile */
+
+.tabcontent button, .reloadButton{
+
+    position: absolute;
+    padding: 7px;
+    margin: 80px;
+
+}
+#signOutButton{
+    right: 0px;
+    bottom: 0px;
+}
+#confirmButton{
+    right: 60%;
+    bottom: 35%;
+}
+.textArea {
+    left: 200px;
+    bottom: 32px;
+}
+
+#tabDiv {
+    top: 100px;
+    position: relative;
+    margin: auto;
+    width: 1000px;
+    height: 50px;
+}
+.tab{
+    background-color: lightblue;
+    display: inline-block;
+    height: 113%;
+    width: 33%;
+    text-align: center;
+    padding:10px;
+    font-size: 30px;
+}
+#Home{
+    background-color: white;
+}
+
+.tabcontent{
+    display: none;
+    top: 90px;
+    position: relative;
+    margin: auto;
+    width: 1000px;
+    height: 650px;
+    background-color: lightblue;
+}
+
+.tabcontent p{
+    margin:10px;
+}
+
+#HomePage{
+    display: Block;
+}
+
+.tabcontent h1{
+    padding: 50px;
+    position: relative;
+}
+.tabcontent h3{
+    text-align: left;
+    left: 24px;
+    position: relative;
+    display: inline;
+    width: 90%;
+}
+.tabcontent h3.nr2{
+    left: 57%;
+    position: absolute;
+    top: 150px;
+}
+.userInfo{
+    margin: 15px;
+    /*background-color: white;*/
+    width: 40%;
+
+}
+.inputarea{
+    margin: 18px;
+}
+th, td{
+    text-align: left;
+    padding: 4px;
+}
+.reloadButton{
+    right: 30px;
+    bottom: 40px;
+}
+
+
+.PostedMessagesDiv{
+    background-color: white;
+    position: absolute;
+    width: 500px;
+    height: 308px;
+    right: 10px;
+    top: 200px;
+    overflow: auto;
+}
+
+#searchLabel{
+    left: 32px;
+    position: absolute;
+    right: 6px;
+    bottom: 70px;
+
+}
+
+#searchInput {
+    left: 27px;
+    position: absolute;
+    width: 340px;
+    height: 30px;margin: 2px;bottom: 40px;
+}
+#searchButton{
+    left: 40px;
+    position: absolute;
+    bottom: 10px;
+}
+
+#searchMessage{
+    color:blue;
+    left: 98px;
+    bottom:6px;
+    position: absolute;
+}
