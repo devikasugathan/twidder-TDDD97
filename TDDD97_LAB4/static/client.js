@@ -485,7 +485,7 @@ function connectsocket(){
 
   console.log("GOT TOKEN ");
   connection.onopen = function() {
-    console.log("INSIDE THE FUNCTION AND THIS PART IS NOT WARKING");
+    console.log("INSIDE THE FUNCTION");
     connection.send(token); //Sending token to server
   };
   connection.onerror = function(error) {
@@ -494,7 +494,7 @@ function connectsocket(){
   connection.onmessage = function(message) {
     data = message.data
     if(data == 'Signout') { //If signout message received
-      console.log("Signing outtttttt");
+      console.log("Signing out");
       connection.close(); //Connection closed
       token=null;
       localStorage.removeItem("currentUser"); //Removing token from local storage

@@ -13,7 +13,8 @@ import ssl
 from email.message import EmailMessage
 from flask_bcrypt import Bcrypt
 
-app = Flask(__name__)
+#app = Flask(__name__)
+app = Flask(__name__, static_url_path = '/static')
 sockets = Sock(app)
 bcrypt = Bcrypt(app)
 loggedIn = {}
@@ -24,20 +25,20 @@ def connectsocket(sock):
     while True:
         try:
             token = sock.receive() # Token received from client
-            print("token recieved")
+            print("Token recieved")
             print(token)
             email = database_helper.get_email_from_token(token)
             print(email)
             if email!=None: # If email exists in database
-                print("email exist in DB")
+                print("Email exist in DB")
                 email = email[0]
                 print(email)
                 oldsock = loggedIn.get(email) # Get connection from dictionary by seacrhing with email
                 loggedIn[email] = sock # Set new connection
                 if oldsock!=None: # If old connection exists
-                    print("old connection exist")
+                    print("Old connection exists")
                     try:
-                        print("signout send aaki")
+                        print("Sending signout")
                         oldsock.send('Signout') # Send signout message to client side
                         oldtoken = database_helper.get_token_from_email(email)[0]
                         result = database_helper.remove_login(oldtoken) # Removing old connection token from database
@@ -47,7 +48,7 @@ def connectsocket(sock):
             break
 
 
-app = Flask(__name__, static_url_path = '/static')
+
 app.debug = True
 #session = {'token':'email'}
 @app.teardown_request
