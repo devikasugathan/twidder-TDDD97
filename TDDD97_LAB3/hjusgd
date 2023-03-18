@@ -1,0 +1,377 @@
+var welcomeDiv;
+var profileDiv;
+var windowDiv;
+var minPassLength = 5;
+
+
+// Checking for the correct view if its current user or not
+displayView = function(){
+    if (localStorage.getItem("currentUser") == "")
+        welcome();
+    else
+        profile();
+};
+welcome = function(){
+  windowDiv.innerHTML = welcomeDiv.innerHTML;
+}
+profile = function(){
+  windowDiv.innerHTML = profileDiv.innerHTML;
+  //connectsocket();
+}
+// on loading
+window.onload = function () {
+
+
+    if (localStorage.getItem("currentUser") == null)
+        localStorage.setItem("currentUser", "");
+    if (localStorage.getItem("homeEmail") == null)
+        localStorage.setItem("homeEmail", "");
+    if (localStorage.getItem("browseEmail") == null)
+        localStorage.setItem("browseEmail", "");
+
+
+    welcomeDiv = document.getElementById("welcomeview");
+    profileDiv = document.getElementById("profileview");
+    windowDiv = document.getElementById("WindowDiv");
+
+
+    displayView();
+    //connectsocket();
+
+    setInfo("home");
+    setInfo("browse");
+};
+//url to send data, the method,data thas is JSON body,Tobedone if req is successful,if req is failed
+function makeRequest(url, method, data, onSuccess, onError, authorization = false) {
+    let r = new XMLHttpRequest();
+    r.onreadystatechange = function () {
+        if (this.readyState == 4) {
+
+
+            if (this.status == 200) {
+                let res = JSON.parse(this.responseText)
+                onSuccess(res.data)
+            } else {
+                onError(this.status)
+            }
+        }
+    }
+    r.open(method, url, true);
+    r.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    if (authorization) {
+        r.setRequestHeader("authorization", getToken());
+    }
+    r.send(JSON.stringify(data));
+}
+
+function getToken() {
+    return localStorage.getItem("currentUser");
+}
+
+//Function for setting user details
+function setInfo(user) {
+    // "user" could be either home or browse, this way know which info we are displaying and where
+    let token = localStorage.getItem("currentUser");
+    let error_text = document.getElementById("InfoError");
+    if (token != null && token != "" ){
+        let userTable = document.getElementById(user + "UserInfo");
+        let email = localStorage.getItem(user + "Email");
+        makeRequest("/get_user_data_by_token", "GET", {},
+          function (data) {
+            userTable.rows[0].cells[1].innerHTML = userDataArray["data"].email;
+            userTable.rows[1].cells[1].innerHTML = userDataArray["data"].firstname;
+            userTable.rows[2].cells[1].innerHTML = userDataArray["data"].familyname;
+            userTable.rows[3].cells[1].innerHTML = userDataArray["data"].gender;
+            userTable.rows[4].cells[1].innerHTML = userDataArray["data"].city;
+            userTable.rows[5].cells[1].innerHTML = userDataArray["data"].country;
+            },
+        /* onError */
+          function (code) {
+              switch (code) {
+                  case 401:
+                      msg = "Token expired, try again."
+                      break;
+                  case 400:
+                  default:
+                    msg = "Application error, try again."
+            }
+            error_text.innerHTML = msg;
+        },
+        true);
+
+
+
+    }
+
+}
+
+
+
+
+
+
+
+// SIGN IN //
+
+function signin() {
+    let form = document.getElementById("signin_form");
+    let email = form[0].value;
+    let password = form[1].value;
+    let errorMess = document.getElementById("LoginError");
+    if (password.length < minPassLength){
+        errorMess.innerHTML = "Password len Error";
+    } else {
+        window.alert("Ariyillaaaa");
+        makeRequest("/myServer/sign_in", "POST", {'email': email, 'password': password},
+            function (data) {
+              let token = data.token;
+              window.alert(data);
+              localStorage.setItem("currentUser", token);
+              form.reset();
+              displayView();
+              setInfo("home");
+              reloadWall("home");
+            },
+            function (code) {
+              switch (code) {
+                case 401:
+                    msg = "Wrong username or password."
+                    break;
+                case 400:
+                    msg = "400 HEREREEEE"
+                case 404:
+                    msg = "404 HERE"
+                default:
+                    msg = "Application Error, Try again"
+
+              }
+              document.getElementById("LoginError").innerHTML = msg;
+            });
+
+            window.alert("zedfghjm");
+          }
+    return false;
+}
+
+
+// SIGN UP //
+function sign_up() {
+    let form = document.getElementById("signup_form");
+    let errorMess = document.getElementById("SignUpError");
+    let repeatPasswordInput = document.getElementById("Repeat PSW");
+    if (validatePassword(form[6].value, form[7].value, repeatPasswordInput)) {
+      repeatPasswordInput.setCustomValidity("");
+
+      makeRequest("/sign_up", "post",
+        {
+          firstname: form[0].value,
+          familyname: form[1].value,
+          gender: form[2].value,
+          city: form[3].value,
+          country: form[4].value,
+          email: form[5].value,
+          password: form[6].value,
+          repeat_password: form[7].value
+        },
+        function() {},
+        function (code) {
+            switch (code) {
+                case 406:
+                    msg = "Password length should be between 5-15"
+                    break;
+                case 409:
+                    msg = "User already exists."
+                    break;
+                case 400:
+                default:
+                    msg = "Application error, try again."
+            }
+            document.getElementById("SignUpError").innerHTML = msg;
+        })
+
+    }
+
+    return false;
+}
+
+// SIGN OUT //
+
+function signout(){
+    makeRequest("/sign_out", "POST", {}, function () { }, function () { }, true);
+
+      // Reset the localStorage
+      localStorage.setItem("currentUser", "");
+      localStorage.setItem("homeEmail", "");
+      localStorage.setItem("browseEmail", "");
+      // Changes the view to welcome view
+      displayView();
+
+
+}
+// Changing password
+function password_change(event){
+   let old_pass = document.getElementById("old_password").value;
+   let new_pass = document.getElementById("new_password").value;
+   let confirm_pass = document.getElementById("confirm_pass").value;
+   let repeatPasswordInput = document.getElementById("confirm_pass");
+   let token = localStorage.getItem("currentUser");
+   let error_text = document.getElementById("match_error");
+
+   if (validatePassword(new_pass, confirm_pass, repeatPasswordInput)) {
+     makeRequest("/change_password", "POST",
+         { "oldPassword": old_pass, "newPassword": new_pass },
+         /* onSuccess */
+         function (_) {
+             form.reset();
+
+         },
+         /* onError */
+         function (code) {
+             switch (code) {
+                 case 401:
+                     msg = "Wrong password or token expired"
+                     break;
+                 case 406:
+                     msg = "Password length must be between 5 and 15"
+                     break;
+                 case 400:
+                 default:
+                     msg = "Application error, try again."
+             }
+             error_text.innerHTML = msg;
+         },
+         true);
+    }
+
+}
+
+
+
+//wall updation
+
+// Submit text button
+//user can be in home or browse
+function updateWall(user){
+    let messageToWall = document.getElementById(user + 'Textarea').value;
+    let token = localStorage.getItem("currentUser");
+    let email = localStorage.getItem(user + "Email");
+    let errorM = document.getElementById("PostError");
+
+      if(messageToWall!=""){
+        makeRequest("/post_message", "POST",
+            {
+                "message": messageToWall,
+                "email": Email,
+            },
+            /* onSuccess */
+            function (_) {
+                document.getElementById(user + 'Textarea').value = "";
+            },
+            /* onError */
+            function (code) {
+                switch (code) {
+                    case 401:
+                        msg = "Token expired, try again."
+                        break;
+                    case 406:
+                        msg = "Message was too long."
+                        break;
+                    case 409:
+                        msg = "No such user."
+                        break;
+                    case 400:
+                    default:
+                        msg = "Application error, try again."
+                }
+                errorM.innerHTML = msg;
+            },
+            true);
+      }else{
+      errorM.innerHTML = "Blank message not allowed";
+      }
+    return false;
+}
+
+// Reload button
+function reloadWall(user) {
+
+    let token = localStorage.getItem("currentUser");
+    let email = localStorage.getItem(user + "Email");
+    let currentWall = email.messages;
+    let errorR = document.getElementById("ReloadError");
+
+    makeRequest("/get_user_messages_by_token", "GET", {},
+        /* onSuccess */
+        function (data) {
+          let complete = "";
+          for (let i = 0; i < currentWall.data.length; i++) {
+            complete += currentWall.data[i].writer + ':   ' + currentWall.data[i].content + "</br>";
+          }
+          document.getElementById(user + 'PostedMessagesDiv').innerHTML = complete; },
+        /* onError */
+        function (code) {
+            switch (code) {
+                case 401:
+                    msg = "Token expired, try again."
+                    break;
+                case 400:
+                default:
+                    msg = "Application error, try again."
+            }
+            errorM.innerHTML = msg;
+        },
+        true);
+    return false;
+}
+
+
+function searchAnotherUser(event){
+
+    let token = localStorage.getItem("currentUser");
+    let email = event.target["searchInput"].value;
+    let error = document.getElementById("searchMessage");
+    makeRequest(`/get_user_data_by_email/${email}`, "GET", {},
+        /* onSuccess */
+        function (data) {
+            document.getElementById("searchForm").reset();
+            localStorage.setItem("browseEmail", email);
+            setInfo("browse");
+        },
+        /* onError */
+        function (code) {
+            switch (code) {
+                case 401:
+                    msg = "Token expired, try again."
+                    break;
+                case 406:
+                    msg = "No such user."
+                    break;
+                case 400:
+                default:
+                    msg = "Application error, try again."
+            }
+            errorM.innerHTML = msg;
+        },
+        true);
+    return false;
+}
+
+//changing tab
+function tabpage(event, name){
+
+    let tabcontent = document.getElementById("tabDiv");
+    for (i = 0; i < tabcontent.children.length; i++) {
+        tabcontent.children[i].style.backgroundColor = "lightblue";
+    }
+    // Select the one we want
+    let div = event.target;
+    div.style.backgroundColor = "white";
+
+    let allPages = document.getElementsByClassName("tabcontent");
+    for (let i = 0; i < allPages.length; i++) {
+        allPages[i].style.display = "none";
+    }
+    // Select only the one we want
+    let selected_tab = document.getElementById(name);
+    selected_tab.style.display = "block";
+}

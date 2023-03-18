@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>TwidderLAB4</title>
+        <title>TwidderLAB1</title>
         <meta charset="utf-8">
-        <link href="/static/client.css" type="text/css" rel="stylesheet">
-        <script src="/static/client.js" type="text/javascript"></script>
+        <link href="client.css" type="text/css" rel="stylesheet">
+        <script src="client.js"></script>
+        <script src="serverstub.js"></script>
+
         <!--We are having two main divisions: one a welcome div with signin, signup . Next we have the profile view that has multiole tabs. (i)home, (ii)browse and (iii) account-->
         <script type="text/view" id="welcomeview">
 
 
             <div id="Welcome_div">
-                <img src="/static/wimage.png">
+                <img src="wimage.png">
                 <div id="forms_div">
 
-                      <!--Login division for handling log in of registered users, onsubmit calling the signin fn-->
+                <!--Login division for handling log in of registered users, onsubmit calling the signin fn-->
+
                     <div id="Login_div">
-                        <form id="signin_form" action ="" onsubmit="signin(); return false;">
+                        <form id="signin_form" action ="" onsubmit="return signin()">
                             <h3>SIGN IN</h3>
                             <label for="Email">Email </label>
                             <input type="Email" name="email" id="Email_login" size="15" required></br>
@@ -28,8 +31,9 @@
                     </div>
 
                     <!--signup division for handling signup of new users, onsubmit calling the sign_up fn-->
+
                     <div id="signup_div">
-                        <form id="signup_form" action="" method="" onsubmit="sign_up(); return false;">
+                        <form id="signup_form" action="" method="" onsubmit="return sign_up()">
 
                             <h3>SIGN UP</h3>
 
@@ -38,9 +42,8 @@
                             <label for="Gender">Gender</label>
                             <select id="Gender" name="Gender"style="width:110px" required>
                                 <option value="-" ></option>
-                                <option value="Male" >Male</option>
+                                <option value="Man" >Male</option>
                                 <option value="Female" >Female</option>
-                                <option value="Other" >Other</option>
                             </select><br>
                             <label for="City">City </label><input type="text" name="city" id="City" size="15" required> </br>
                             <label for="Country">Country </label><input type="text" name="country" id="Country" size="15" required> </br>
@@ -52,18 +55,8 @@
                             <input type="submit" value="SIGN UP"></br></br>
 
                         </form>
-                        <!-- For password recovery by entering a registered email id -->
-                        <h3>RECOVER YOUR ACCOUNT</h3>
-                        <form id = "passrecovery" onsubmit = "passrecovery(this);return false;">
-                    <div class="input"><label for="recoveremail"> Enter your Email address: </label>
-                        <input id="recoveremail" type="email" required></div>
-                    <input class = "button" type = "submit" value = "Recover">
-
-                </form>
                         <!-- For displaying signup error -->
                         <p id="SignUpError"> </p>
-
-
 
                     </div>
                 </div>
@@ -71,7 +64,7 @@
         </script>
 
 
-        <!-- The profile view -->
+          <!-- The profile view -->
         <script type="text/view" id="profileview">
             <div id="tabDiv">
                 <div id="Home" class="tab" onclick= "tabpage(event, 'HomePage')" >Home</div>
@@ -108,19 +101,17 @@
                         <td></td>
                     </tr>
                 </table>
-                  <!--Posting messages in the wall of home user-->
-                <form id="homeinputarea" class="inputarea" onsubmit="updateWall('home'); return false;">
+                <!--Posting messages in the wall of home user-->
+                <form id="homeinputarea" class="inputarea" onsubmit="return updateWall('home')">
                     <label for="PostMessage">POST A MESSAGE ON YOUR WALL:</label> <br>
-                    <textarea id="homeTextarea" name="textarea" rows="6" cols="50" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+                    <textarea id="homeTextarea" name="textarea" rows="6" cols="50"></textarea>
                     <button class="textArea" type="submit" value="Submit">SUBMIT</button>
                 </form>
                 <!--reloading wall of home user with updated messages-->
                 <div id="homePostedMessagesDiv" class="PostedMessagesDiv"></div>
-                <form id="homeReloadForm" class="reloadForm" onsubmit="reloadWall('home'); return false;">
+                <form id="homeReloadForm" class="reloadForm" onsubmit="return reloadWall('home')">
                     <input id="homeReloadButton" class="reloadButton" type="submit" value="Reload">
                 </form>
-                <p id="InfoError"> </p>
-                <p id="HomeMError"> </p>
 
             </div>
             <div id="BrowsePage" class="tabcontent">
@@ -153,26 +144,25 @@
                         <td></td>
                     </tr>
                 </table>
-                  <!--Posting messages in the wall of user in browse tab-->
-                <form id="browseinputarea" class="inputarea" onsubmit="updateWall('browse'); return false;">
+                <!--Posting messages in the wall of user in browse tab-->
+                <form id="browseinputarea" class="inputarea" onsubmit="return updateWall('browse')">
                     <label for="PostMessage">Post a message on the users wall:</label> <br>
-                    <textarea id="browseTextarea" name="textarea" rows="6" cols="50" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+                    <textarea id="browseTextarea" name="textarea" rows="6" cols="50"></textarea>
                     <button class="textArea" type="submit" value="Submit">SUBMIT</button>
                 </form>
                 <!--reloading wall of browse window for the the searched user with updated messages-->
                 <div id="browsePostedMessagesDiv" class="PostedMessagesDiv"></div>
-                <form id="browseReloadForm" class="reloadForm" onsubmit="reloadWall('browse'); return false;">
+                <form id="browseReloadForm" class="reloadForm" onsubmit="return reloadWall('browse')">
                     <input id="browseReloadButton" class="reloadButton" type="submit" value="Reload">
                 </form>
                 <!--For searching a user from browse tab-->
-                <form id="searchForm" onsubmit="searchAnotherUser(event); return false;">
+                <form id="searchForm" onsubmit="return searchAnotherUser(event)">
                     <label id="searchLabel" for="searchUser">Search the user by email: </label>
                     <input id="searchInput" type="searchedEmail" name="searchedEmail">
                     <input id="searchButton" type="submit" value="Search">
                 </form>
                 <p id="PostError"> </p>
-                <p id="InfoError"> </p>
-                <p id="ReloadError"> </p>
+
                 <p id = searchMessage>  </p>
 
 
@@ -187,11 +177,11 @@
                 <label for="Confirm new password"> Confirm new password: </label>
                 <input type="password" name="name" id="confirm_pass" size="15" required>
 
-
+                <error id=match_error> password does not match </error>
+                <p id = old_error> Old password is incorrect </p>
 
                 <button id=confirmButton type="submit" name="submit" onclick="password_change(event)">Confirm</button>
-                <button id="signOutButton" type="submit" name="submit" onclick="signout(); return false;">SIGN OUT</button>
-                <p id="UPError"> </p>
+                <button id="signOutButton" type="submit" name="submit" onclick="signout()">SIGN OUT</button>
             </div>
         </script>
 
