@@ -311,12 +311,12 @@ function password_change(event){
 //wall updation part
 //user can be in home or browse
 function updateWall(user){
-
+    navigator.geolocation.getCurrentPosition(function (position) {
     let messageToWall = document.getElementById(user + 'Textarea').value;
     let token = localStorage.getItem("currentUser");
     let email = localStorage.getItem(user + "Email");
     let errorM = document.getElementById("HomeMError");
-    data = { 'email': email, 'message': messageToWall };
+    data = { 'email': email, 'message': messageToWall, "latitude": position.coords.latitude,"longitude": position.coords.longitude, };
     if(messageToWall!=""){
       let xreq = new XMLHttpRequest();
       xreq.open("POST", "/myServer/post", true);
@@ -345,6 +345,7 @@ function updateWall(user){
       }
       document.getElementById(user + 'Textarea').value = ''; //clearing the text area
 
+});
 }
 
 // Reload button for reloading the message wall for both the users
@@ -368,8 +369,10 @@ function reloadWall(user) {
             let currentWall = JSON.parse(xreq.responseText);
             let complete = "";
             for (let i = 0; i < currentWall.data.length; i++) {
-              id = "dividd"+ i;
-              complete += currentWall.data[i][0]+ ":   <div id='"+id+"' draggable='true' ondragstart='drag(event)'>" + currentWall.data[i][2] + "</div></br>";
+              id = "dividd" + i;
+              let message = currentWall.data[i].message;
+              let location = currentWall.data[i].geolocation;
+              complete += currentWall.data[i].email + ":   <div id='" + id + "' draggable='true' ondragstart='drag(event)'>" + message + "</div> Location: " + location + "</br>";
             }
             document.getElementById(user + 'PostedMessagesDiv').innerHTML = complete;
           } else if(xreq.status==400){
@@ -387,11 +390,13 @@ function reloadWall(user) {
 
       // connection opened for the case where the user is browse user, the one whose info is set in the browse page. His wall gets reloaded with messages.
 
-let xreq = new XMLHttpRequest();
-xreq.open("GET", "/myServer/getMessagesByEmail?email="+email, true);
-xreq.setRequestHeader("Content-type", "application/json;charset=UTF-8");
-xreq.setRequestHeader("Authorization", token);
-xreq.send();
+      let xreq = new XMLHttpRequest();
+
+      xreq.open("GET", "/myServer/getMessagesByEmail", true);
+      xreq.setRequestHeader("Content-type", "application/json;charset=UTF-8");
+      xreq.setRequestHeader("Authorization", token);
+      xreq.setRequestHeader("req_email", email);
+      xreq.send();
 
 xreq.onreadystatechange=function(){
   if (xreq.readyState==4){
@@ -399,9 +404,11 @@ xreq.onreadystatechange=function(){
       let currentWall = JSON.parse(xreq.responseText);
       let complete = "";
       for (let i = 0; i < currentWall.data.length; i++) {
-        id = "divid"+ i;
-        complete += currentWall.data[i][0]+ ":   <div id='"+id+"' draggable='true' ondragstart='drag(event)'>" + currentWall.data[i][2] + "</div></br>";
-      }
+        id = "divid" + i;
+        let message = currentWall.data[i].message;
+        let location = currentWall.data[i].geolocation;
+        complete += currentWall.data[i].email + ":   <div id='" + id + "' draggable='true' ondragstart='drag(event)'>" + message + "</div> Location: " + location + "</br>";
+  }
       document.getElementById(user + 'PostedMessagesDiv').innerHTML = complete;
     } else if(xreq.status==400){
       errorR.innerHTML="400 Bad Request";

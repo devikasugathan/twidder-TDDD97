@@ -42,22 +42,29 @@ def update_user(new_password, email):
     except:
         return False
 
-def create_post(to_email, email, message):
-    """Add a messages to the database"""
+def create_post(to_email, email, message, location):
+    """Add a message to the database"""
     try:
-        get_db().execute("INSERT into messages(email, to_email, message) VALUES (?, ?, ?)", [email,to_email,message])
+        # Convert the location tuple to a string
+        geolocation = f"{location[0]}, {location[1]}"
+
+        # Insert the message into the database
+        get_db().execute("INSERT INTO messages(email, to_email, message, geolocation) VALUES (?, ?, ?, ?)", (email, to_email, message, geolocation))
         get_db().commit()
+
         return True
-    except:
+    except Exception as e:
+        print(f"Error inserting message into database: {e}")
         return False
+
 
 def get_post(email):
     """Get all messages from selected user from the database"""
 
-    cursor = get_db().execute("SELECT email,to_email,message FROM messages WHERE to_email = ? ",[email])
+    cursor = get_db().execute("SELECT email,to_email,message,geolocation FROM messages WHERE to_email = ? ",[email])
     posts = cursor.fetchall()
     cursor.close()
-    return posts
+    return [{"email": row[0], "to_email": row[1], "message": row[2], "geolocation": row[3]} for row in posts if row[3] is not None]
 
 def find_user(email):
     """Read user by email"""

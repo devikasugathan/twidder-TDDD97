@@ -11,13 +11,12 @@ CREATE TABLE user(email VARCHAR(50) NOT NULL PRIMARY KEY,
                                 country VARCHAR(50)
                                 );
 
-CREATE TABLE messages(email VARCHAR(50),
-                                    to_email VARCHAR(50),
-                                    message VARCHAR(50)
-                                    );
-
-
 
 CREATE TABLE loggedin (email VARCHAR(50) NOT NULL,
                                     token VARCHAR(50) NOT NULL PRIMARY KEY
+                                    );
+CREATE TABLE messages(email VARCHAR(50),
+                                    to_email VARCHAR(50),
+                                    message VARCHAR(50),
+                                    geolocation VARCHAR(100)
                                     );

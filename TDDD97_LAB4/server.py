@@ -12,7 +12,7 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 from flask_bcrypt import Bcrypt
-
+import requests
 #app = Flask(__name__)
 app = Flask(__name__, static_url_path = '/static')
 sockets = Sock(app)
@@ -273,7 +273,6 @@ def get_user_data_by_email():
                 formated_data = {"email": data[0], "firstname": data[2], "familyname": data[3], "gender": data[4], "city": data[5], "country": data[6]}
                 return jsonify({"data" : formated_data}), 200 # "Data successfully sent to you!"
 
-
 @app.route("/myServer/getUserMessageByToken", methods=['GET'])
 def get_user_messages_by_token():
     """Get user's message wall thought the token of the user"""
@@ -292,7 +291,9 @@ def get_user_messages_by_token():
                 #data = data[0]
                 #message = {"email": data[0], "to_email": data[1], "message": data[2]}
                 #print(message)
-                return jsonify({"data" : data }), 200 # "Data successfully sent to you!"
+                messages = [{"email": row['email'], "to_email": row['to_email'], "message": row['message'], "geolocation": row['geolocation']} for row in data]
+                return jsonify({"data": messages}), 200 # "Data successfully sent to you!"
+                #return jsonify({"data" : data }), 200 # "Data successfully sent to you!"
             else:
                 return jsonify({"data" : ""}), 200
         else:
@@ -304,7 +305,10 @@ def get_user_messages_by_token():
 def get_user_messages_by_email():
     """Get user's message wall thought the email of the user"""
     token = request.headers["Authorization"]
-    req_email = request.args.get("email")
+    #req_email = request.args.get("email")
+    req_email = request.headers["req_email"]
+    print(req_email)
+    print(token)
 
     # Validate Token
     if token == "":
@@ -326,7 +330,9 @@ def get_user_messages_by_email():
                     return jsonify({}), 204 #"No msg found on wall of user provided"
                 else:
                     #message = {"email": data[0], "to_email": data[1], "message": data[2]}
-                    return jsonify({"data" : data}), 200 # "Data successfully displayed!"
+                    messages = [{"email": row['email'], "to_email": row['to_email'], "message": row['message'], "geolocation": row['geolocation']} for row in data]
+                    return jsonify({"data": messages}), 200 # "Data successfully displayed!"
+
 
 @app.route("/myServer/post", methods=['POST'])
 def post_message():
@@ -342,6 +348,7 @@ def post_message():
         if email is not None:
             email=email[0]
             json_obj = request.get_json()
+
             if 'email' not in json_obj or 'message' not in json_obj:
                 print("ZEROTH 400")
                 return jsonify({}), 400
@@ -366,12 +373,14 @@ def post_message():
                     else:
             # Verify message posting
                         message = json_obj['message']
+
                         if message== "":
                             print("SECOND 400")
                             return jsonify({}), 400 #Bad request
                         else:
             # error checking function or OK
-                            if not database_helper.create_post(to_email,email,message):
+                            location = get_location(json_obj['latitude'], json_obj['longitude'])
+                            if not database_helper.create_post(to_email,email,message,location):
                                 print("HELLOO %======")
                                 return jsonify({}), 500 #"Server failed to post message to database"
                             else:
@@ -380,6 +389,15 @@ def post_message():
             print("SECOND 404")
             return jsonify({}), 404 # No email id with given token
 
+def get_location(lat, lon):
+
+    url = f'https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}'
+    response = requests.get(url).json()
+    city = response.get('address', {}).get('city')
+    country = response.get('address', {}).get('country')
+    print(city)
+    print(country)
+    return (city, country)
 
 @app.route('/recover_password', methods = ['POST'])
 def recover_password():
