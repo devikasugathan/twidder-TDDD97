@@ -19,6 +19,16 @@ sockets = Sock(app)
 bcrypt = Bcrypt(app)
 loggedIn = {}
 
+#Connect socket function for handling multiple sessions.Once a connection is opened, the token for current user is passer over to this function from JS part.
+#The token is the passed on to get_email_from_token for finding the associated email.
+#We use Sock which is a simple extension to implement WebSocket communication between a client and the server
+#Checks if the email exists in database
+#Check for the connection by this email from the logged in dictionary. The logged in dictionary gets updated with the new connection everytime with the email associated
+#oldsock gets the old connection from the email associated with the token recieved. It is taken from the loggedin dictionary.
+#If an old connection exist we send a signout message: oldsock.send('Signout') to the client side.
+#now we take the old token for this email from database using get_token_from_email(email)[0] and store as old token.
+#This oldtoken is then removed from the database using remove_login("delete from loggedin where token = ?", [token])
+
 @sockets.route('/connectsocket')
 def connectsocket(sock):
     print("Entered the function")
@@ -389,6 +399,14 @@ def post_message():
             print("SECOND 404")
             return jsonify({}), 404 # No email id with given token
 
+
+#The function get_location takes the arguments lat and long which are passed from the post function.
+#Reverse geocoding generates an address from a latitude and longitude
+#The main format of the reverse API is: https://nominatim.openstreetmap.org/reverse?lat=<value>&lon=<value>&<params>
+#The  url for nominatim is set with the latitude and longittude value recieved from user
+#city and country data are taken fro the address array recieved as the response for the requested url
+#The function returns city and country value.
+
 def get_location(lat, lon):
 
     url = f'https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}'
@@ -398,6 +416,21 @@ def get_location(lat, lon):
     print(city)
     print(country)
     return (city, country)
+
+
+#The recover_password function is used to recover the account by sending a tempory password to the entered email address.
+#Initially we check if the recieved email address exists in the database or not.
+#If exists, a random new password is generated. The from email and from password(application password generated from gmail)is set
+#to_email is the email entered by users
+#The body and subject is defined.
+# The EmailMessage class, imported from the email.message module.  EmailMessage provides the core functionality for setting and querying header fields, for accessing message bodies, and for creating or modifying structured messages.
+#create_default_context() returns a new context with secure default settings(Secure Sockets Layer)
+#SMTP client session object that can be used to send mail to any internet machine with an SMTP
+#with smtplib.SMTP('localhost', port) as server:
+#server.login('username', 'password')
+#server.sendmail(sender, receivers, msg.as_string())
+#database_helper.change_password is called to update with email and new password('UPDATE user SET password = ? WHERE email =  ?', [newpassword, email])
+#Status code are returned
 
 @app.route('/recover_password', methods = ['POST'])
 def recover_password():
