@@ -93,10 +93,12 @@ function setInfo(user) {
       }
     };
         } else if (user == 'browse') {
-          xreq.open("GET", "/myServer/getDataByEmail", true);
+          let xreq = new XMLHttpRequest();
+          //xreq.open("GET", "/myServer/getDataByEmail", true);
+          xreq.open("GET", "/myServer/getDataByEmail/" + email, true);
           xreq.setRequestHeader("Content-type", "application/json;charset=UTF-8");
           xreq.setRequestHeader("Authorization", token);
-          xreq.setRequestHeader("req_email", email);
+          //xreq.setRequestHeader("req_email", email);
           xreq.send();
           xreq.onreadystatechange=function(){
             if (xreq.readyState==4){
@@ -391,11 +393,11 @@ function reloadWall(user) {
       // connection opened for the case where the user is browse user, the one whose info is set in the browse page. His wall gets reloaded with messages.
 
       let xreq = new XMLHttpRequest();
-
-      xreq.open("GET", "/myServer/getMessagesByEmail", true);
+      //xreq.open("GET", "/myServer/getDataByEmail", true);
+      xreq.open("GET", "/myServer/getMessagesByEmail/" + email, true);
       xreq.setRequestHeader("Content-type", "application/json;charset=UTF-8");
       xreq.setRequestHeader("Authorization", token);
-      xreq.setRequestHeader("req_email", email);
+      //xreq.setRequestHeader("req_email", email);
       xreq.send();
 
 xreq.onreadystatechange=function(){
@@ -434,10 +436,11 @@ function searchAnotherUser(event){
     let email = event.target["searchInput"].value;
     let errors = document.getElementById("searchMessage");
     let xreq = new XMLHttpRequest();
-    xreq.open("GET", "/myServer/getDataByEmail", true);
+    //xreq.open("GET", "/myServer/getDataByEmail", true);
+    xreq.open("GET", "/myServer/getDataByEmail/" + email, true);
     xreq.setRequestHeader("Content-type", "application/json;charset=UTF-8");
     xreq.setRequestHeader("Authorization", token);
-    xreq.setRequestHeader("req_email", email);
+    //xreq.setRequestHeader("req_email", email);
     xreq.send();
     xreq.onreadystatechange=function(){
       if (xreq.readyState==4){

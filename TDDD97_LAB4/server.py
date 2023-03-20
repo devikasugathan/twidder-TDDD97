@@ -293,11 +293,16 @@ def get_user_data_by_token():
 
 # The function extracts user data from the database of email provided. The token of the signed in user is validated and checks if user with provided email exists.
 # If the user exists information of the user is extracted from the 'user' database
-@app.route("/myServer/getDataByEmail", methods=['GET'])
-def get_user_data_by_email():
+#@app.route("/myServer/getDataByEmail", methods=['GET'])
+#def get_user_data_by_email():
+@app.route("/myServer/getDataByEmail/<email>", methods = ['GET'])
+def get_user_data_by_email(email):
     """Get user data by email"""
     token = request.headers["Authorization"]
-    req_email = request.headers["req_email"]
+    #req_email = request.headers["req_email"]
+    req_email = email
+    print("req_email")
+    print(req_email)
     # Validate Token
     if token is None:
         return jsonify({}), 400 #Bad request
@@ -348,12 +353,14 @@ def get_user_messages_by_token():
 # The displayed data include from email, to_email and the messages in JSON format.
 # If the token is wrong or if the email does not exists or if the data cannot be retrived the function generates error.
 
-@app.route("/myServer/getMessagesByEmail", methods=['GET'])
-def get_user_messages_by_email():
+
+@app.route("/myServer/getMessagesByEmail/<email>", methods = ['GET'])
+def get_user_messages_by_email(email):
     """Get user's message wall thought the email of the user"""
     token = request.headers["Authorization"]
     #req_email = request.args.get("email")
-    req_email = request.headers["req_email"]
+    #req_email = request.headers["req_email"]
+    req_email = email
     print(req_email)
     print(token)
 
