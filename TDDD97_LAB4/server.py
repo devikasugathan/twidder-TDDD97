@@ -489,8 +489,8 @@ def recover_password():
     print(user)
     if(user != None):
         newpassword = str(uuid.uuid4())
-        from_email = 'devikasugathan007@gmail.com'  #Setting the from email
-        from_password = 'qeypatqyvoswcxfr'          #Application password generated from gmail
+        from_email = 'dyou@gmail.com'  #Setting the from email
+        from_password = 'gatthhqyvosdfthfgr'          #Application password generated from gmail
         to_email = email
         body = "Hello, \n Recovery of your account was successful. Kindly use this temporary password for login and then change your password. Enjoy your service with Twidder:) New password: " + newpassword +"\n Twidder support team<3"
         subject = "TWIDDER ACCOUNT RECOVERY"
